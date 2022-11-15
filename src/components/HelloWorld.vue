@@ -12,6 +12,8 @@
 
 <script>
 import crossIcon from '../icons/cross.vue'
+import alert from '../web3/alert.js'
+
 
 export default {
   components:{
@@ -39,25 +41,24 @@ export default {
       ["","","","",""],
     ];
     this.cells = cells;
+    // 初始化链
+
+    alert.alert()
   },
   methods:{
     click(x,y){
       if(!this.canClick(x,y, this.curPlayer)) return;
       this.cells[x][y] = this.curPlayer
       this.lastCell[this.curPlayer] = [x,y]
+      // 上链
       this.nextPlayer()
     },
     canClick(x,y, player){
-      console.log(1)
       if(x <0 || x >= 5 || y < 0 || y>=5 ) return false;
-      console.log(2)
       if (this.cells[x][y]) return false;
-      console.log(3)
       if(!this.lastCell[player]) return true;
-      console.log(4)
       const last = this.lastCell[player]
       if( Math.abs(last[0] - x) + Math.abs(last[1] - y) > 1) return false;
-      console.log(5)
       return true
     },
     styleClass(x,y){
@@ -123,8 +124,4 @@ export default {
 .cell.q{
   background-color: #FFCCCC !important;
 }
-.disabled{
-
-}
-
 </style>
