@@ -8,5 +8,13 @@ module.exports = defineConfig({
       new NodePolyfillPlugin()
     ],
     resolve: { fallback: { fs: false } }
+  },
+  chainWebpack: config => {
+    config
+      .plugin('eslint')
+      .tap(args => {
+        args[0].fix = true
+        return args
+      })
   }
 })
