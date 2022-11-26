@@ -52,8 +52,15 @@ export default {
     this.cells = cells
     // 初始化链
 
+    // construct wallet
     const wallet = new SensiletWallet()
     web3.setWallet(wallet)
+    // example to display wallet balance
+    // this.wallet = {
+    //   balance: '1111',
+    //     network: 'testnet',
+    //     address: 'asdgawdawdvu27tasd'
+    // }
   },
   methods: {
     click (x, y) {
