@@ -18,7 +18,10 @@
     ],
     "paths": {
       "@/*": [
-        "src/*"
+        "src/*",
+      ],
+      "crypto": [
+        "./node_modules/crypto-browserify"
       ]
     },
     "lib": [

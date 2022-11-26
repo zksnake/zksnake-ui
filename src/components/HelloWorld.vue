@@ -11,7 +11,7 @@
 
 <script>
 import crossIcon from '../icons/cross.vue'
-// import alert from '../web3/alert.js'
+import web3 from '../web3'
 
 export default {
   components: {

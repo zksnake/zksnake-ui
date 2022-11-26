@@ -144,6 +144,7 @@ export class SensiletWallet extends wallet {
 
   async getNetwork (options?: { purpose?: string; }): Promise<Network> {
     const address = await this.sensilet.getAddress()
+    // eslint-disable-next-line
     const a = new bsv.Address.fromString(address)
     return a.network.name === 'testnet' ? Network.Testnet : Network.Mainnet
   }
@@ -153,6 +154,7 @@ function getAddressFromP2PKH (script: string, network: Network) : string {
   const asm = bsv.Script.fromHex(script).toASM()
   // OP_DUP OP_HASH160 ${address} OP_EQUALVERIFY OP_CHECKSIG
   const pubKeyHash = asm.split(' ')[2] // get address from script
+  // eslint-disable-next-line
   const address = new bsv.Address.fromHex(`${network === Network.Testnet ? '6f' : '00'}${pubKeyHash}`).toString()
   return address
 }
