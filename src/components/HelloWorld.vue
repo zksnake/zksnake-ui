@@ -4,20 +4,26 @@
     <div class="row" v-for="xc, x in cells" :key="'x-'+x">
       <div class="cell" :class="styleClass(x,y)"
         v-for="yc, y in xc" :key="'y-'+y" @click="click(x,y)">
-        <crossIcon class="icon" v-if="!cells[x][y] && !canClick(x,y, curPlayer)" style="opacity: 0.1; "></crossIcon>
+        <div v-if="setupGame" class="boomIcon">
+          <boomIcon class="icon"/>
+        </div>
+        <crossIcon class="icon" v-if="!setupGame&&!cells[x][y] && !canClick(x,y, curPlayer)" style="opacity: 0.1; "></crossIcon>
       </div>
     </div>
+    <div class="end" @click="endGame">End Game</div>
   </div>
 </template>
 
 <script>
 
 import crossIcon from '../icons/cross.vue'
+import boomIcon from '../icons/boom.vue'
 import WalletInfo from './WalletInfo.vue'
 import { web3, SensiletWallet } from '../web3'
 
 export default {
   components: {
+    boomIcon,
     crossIcon,
     WalletInfo
   },
@@ -26,6 +32,8 @@ export default {
   },
   data () {
     return {
+      setupGame: true,
+
       cells: [],
       curPlayer: 'q', // p or q
       lastCell: { // last position of p or q
@@ -50,7 +58,7 @@ export default {
       ['', '', '', '', '']
     ]
     this.cells = cells
-    // 初始化链
+    // TODO 初始化链
 
     // construct wallet
     const wallet = new SensiletWallet()
@@ -63,11 +71,19 @@ export default {
     // }
   },
   methods: {
+    endGame () {
+      // TODO end game
+    },
     click (x, y) {
+      if (this.setupGame) {
+        this.setupGame = false
+        // TODO get x, y and init chain
+        return
+      }
+
       if (!this.canClick(x, y, this.curPlayer)) return
       this.cells[x][y] = this.curPlayer
       this.lastCell[this.curPlayer] = [x, y]
-      // 上链
       this.nextPlayer()
     },
     canClick (x, y, player) {
@@ -140,5 +156,26 @@ export default {
 }
 .cell.q{
   background-color: #FFCCCC !important;
+}
+
+.boomIcon{
+  opacity: 0;
+  padding: 12px;
+}
+.boomIcon:hover{
+  opacity: 0.6;
+}
+
+.boomIcon.icon{
+  top: 10px;
+}
+
+.end{
+  border: 1px solid red;
+  width: 100px;
+  border-radius: 10px;
+  margin: 20px auto;
+  padding: 10px;
+  cursor: pointer;
 }
 </style>
