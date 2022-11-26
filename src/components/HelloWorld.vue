@@ -9,20 +9,18 @@
   </div>
 </template>
 
-
 <script>
 import crossIcon from '../icons/cross.vue'
-import alert from '../web3/alert.js'
-
+// import alert from '../web3/alert.js'
 
 export default {
-  components:{
-    crossIcon,
+  components: {
+    crossIcon
   },
   name: 'HelloWorld',
   props: {
   },
-  data(){
+  data () {
     return {
       cells: [],
       curPlayer: 'q', // p or q
@@ -32,52 +30,52 @@ export default {
       }
     }
   },
-  mounted(){
+  mounted () {
     const cells = [
-      ["","","","",""], // p or q
-      ["","","","",""],
-      ["","","","",""],
-      ["","","","",""],
-      ["","","","",""],
-    ];
-    this.cells = cells;
+      ['', '', '', '', ''], // p or q
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']
+    ]
+    this.cells = cells
     // 初始化链
 
-    alert.alert()
+    // alert.alert()
   },
-  methods:{
-    click(x,y){
-      if(!this.canClick(x,y, this.curPlayer)) return;
+  methods: {
+    click (x, y) {
+      if (!this.canClick(x, y, this.curPlayer)) return
       this.cells[x][y] = this.curPlayer
-      this.lastCell[this.curPlayer] = [x,y]
+      this.lastCell[this.curPlayer] = [x, y]
       // 上链
       this.nextPlayer()
     },
-    canClick(x,y, player){
-      if(x <0 || x >= 5 || y < 0 || y>=5 ) return false;
-      if (this.cells[x][y]) return false;
-      if(!this.lastCell[player]) return true;
+    canClick (x, y, player) {
+      if (x < 0 || x >= 5 || y < 0 || y >= 5) return false
+      if (this.cells[x][y]) return false
+      if (!this.lastCell[player]) return true
       const last = this.lastCell[player]
-      if( Math.abs(last[0] - x) + Math.abs(last[1] - y) > 1) return false;
+      if (Math.abs(last[0] - x) + Math.abs(last[1] - y) > 1) return false
       return true
     },
-    styleClass(x,y){
+    styleClass (x, y) {
       return {
-        p: this.cells[x][y]==='p',
+        p: this.cells[x][y] === 'p',
         q: this.cells[x][y] === 'q',
-        ph: this.curPlayer==='p',
-        qh: this.curPlayer ==='q',
+        ph: this.curPlayer === 'p',
+        qh: this.curPlayer === 'q'
       }
     },
-    nextPlayer(){
-      let next = this.curPlayer === 'p' ? 'q' : 'p'
+    nextPlayer () {
+      const next = this.curPlayer === 'p' ? 'q' : 'p'
       const lastCell = this.lastCell[next]
-      if(lastCell){
+      if (lastCell) {
         if (!this.canClick(lastCell[0] - 1, lastCell[1], next) &&
             !this.canClick(lastCell[0] + 1, lastCell[1], next) &&
             !this.canClick(lastCell[0], lastCell[1] + 1, next) &&
             !this.canClick(lastCell[0], lastCell[1] - 1, next)
-        ){
+        ) {
           return
         }
       }
