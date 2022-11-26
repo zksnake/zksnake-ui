@@ -1,9 +1,10 @@
 <template>
   <div class="hello">
+    <WalletInfo :wallet="wallet"></WalletInfo>
     <div class="row" v-for="xc, x in cells" :key="'x-'+x">
       <div class="cell" :class="styleClass(x,y)"
         v-for="yc, y in xc" :key="'y-'+y" @click="click(x,y)">
-        <crossIcon class="icon" v-if="!this.cells[x][y] && !canClick(x,y, curPlayer)" style="opacity: 0.1; "></crossIcon>
+        <crossIcon class="icon" v-if="!cells[x][y] && !canClick(x,y, curPlayer)" style="opacity: 0.1; "></crossIcon>
       </div>
     </div>
   </div>
@@ -12,11 +13,13 @@
 <script>
 
 import crossIcon from '../icons/cross.vue'
+import WalletInfo from './WalletInfo.vue'
 import { web3, SensiletWallet } from '../web3'
 
 export default {
   components: {
-    crossIcon
+    crossIcon,
+    WalletInfo
   },
   name: 'HelloWorld',
   props: {
@@ -28,6 +31,13 @@ export default {
       lastCell: { // last position of p or q
         q: null,
         p: null
+      },
+
+      // wallet
+      wallet: {
+        balance: 'init',
+        network: 'init',
+        address: 'init'
       }
     }
   },
