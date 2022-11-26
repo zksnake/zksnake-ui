@@ -10,8 +10,9 @@
 </template>
 
 <script>
+
 import crossIcon from '../icons/cross.vue'
-import web3 from '../web3'
+import { web3, SensiletWallet } from '../web3'
 
 export default {
   components: {
@@ -41,7 +42,8 @@ export default {
     this.cells = cells
     // 初始化链
 
-    // alert.alert()
+    const wallet = new SensiletWallet()
+    web3.setWallet(wallet)
   },
   methods: {
     click (x, y) {
