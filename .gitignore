@@ -44,7 +44,7 @@ pnpm-debug.log*
 /circuits/*.zkey
 /circuits/*.ptau
 /circuits/*.r1cs
-/circuits/battleship_js
+/circuits/snake_js
 
 # misc
 .DS_Store
