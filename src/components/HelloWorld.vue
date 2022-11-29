@@ -73,7 +73,7 @@ export default {
     }
   },
   mounted () {
-    this.setUp()
+    // this.setUp()
   },
   methods: {
     showBoom (x, y) {
@@ -125,6 +125,7 @@ export default {
     },
 
     async setUp () {
+      await this.setUpWallet()
       // init cells
       for (let i = 0; i < rows; i++) {
         const col = []
