@@ -7,6 +7,7 @@
         <div v-if="setupGame" class="boomIcon">
           <boomIcon class="icon"/>
         </div>
+        <boomIcon class="icon" v-if="showBoom(x,y)"/>
         <crossIcon class="icon" v-if="!setupGame&&!cells[x][y] && !canClick(x,y, 'p')" style="opacity: 0.1; "></crossIcon>
       </div>
     </div>
@@ -71,8 +72,22 @@ export default {
       this.logs.push('winner is ' + this.winner)
     }
   },
+  mounted () {
+    this.setUp()
+  },
   methods: {
-    async setUp () {
+    showBoom (x, y) {
+      if (this.poisons.p.length !== rows) return false
+      return this.poisons.p[x][y]
+      // let show = false
+      // this.poisons.p.forEach(v => {
+      //   console.log('pppp', v, x, y)
+      //   if (v[0] === x && v[1] === y) {
+      //     show = true
+      //   }
+      // })
+    },
+    async setUpWallet () {
       // listen message
 
       // TODO 初始化链
@@ -101,14 +116,15 @@ export default {
           console.error('requestAccount error', error)
         }
       }
-      console.log(wallet)
       this.wallet = {
         balance: (await wallet.sensilet.getBsvBalance()).balance.total,
         network: wallet.network,
         address: await wallet.sensilet.getAddress(),
         client: wallet
       }
+    },
 
+    async setUp () {
       // init cells
       for (let i = 0; i < rows; i++) {
         const col = []
@@ -304,6 +320,7 @@ export default {
   top: 0;
   left: 0;
   padding: 0;
+  position: relative;
 }
 .cell.ph:hover{
   background-color: #CCFFFF;
@@ -327,8 +344,16 @@ export default {
   opacity: 0.6;
 }
 
-.boomIcon.icon{
+/* .boomIcon.icon{
   top: 10px;
+} */
+
+.icon{
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  left: 0;
+  top: 0;
 }
 
 .end{
