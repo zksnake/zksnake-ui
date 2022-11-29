@@ -11,6 +11,9 @@
       </div>
     </div>
     <div class="end" v-if="!wallet.client" @click="setUp">Start Game</div>
+    <div>
+      <p v-for="(log,idx) in logs" :key="('log-'+idx)">{{log}}</p>
+    </div>
   </div>
 </template>
 
@@ -20,6 +23,10 @@ import crossIcon from '../icons/cross.vue'
 import boomIcon from '../icons/boom.vue'
 import WalletInfo from './WalletInfo.vue'
 import { web3, SensiletWallet, Network } from '../web3'
+
+const rows = 5
+const cols = 5
+const posionsPerPlayer = 2
 
 export default {
   components: {
@@ -41,30 +48,25 @@ export default {
         p: null
       },
 
+      poisons: {
+        p: [],
+        q: []
+      },
+
       // wallet
       wallet: {
         balance: 'init',
         network: 'init',
         address: 'init',
         client: null
-      }
+      },
+
+      logs: []
     }
-  },
-  mounted () {
-    // this.setUp()
   },
   methods: {
     async setUp () {
       // listen message
-
-      const cells = [
-        ['', '', '', '', ''], // p or q
-        ['', '', '', '', ''],
-        ['', '', '', '', ''],
-        ['', '', '', '', ''],
-        ['', '', '', '', '']
-      ]
-      this.cells = cells
 
       // TODO 初始化链
       // construct wallet
@@ -99,13 +101,72 @@ export default {
         address: await wallet.sensilet.getAddress(),
         client: wallet
       }
+
+      // init cells
+      for (let i = 0; i < rows; i++) {
+        const col = []
+        const pP = []
+        const pQ = []
+
+        for (let j = 0; j < cols; j++) {
+          col.push('')
+          pP.push(false)
+          pQ.push(false)
+        }
+        this.cells.push(col)
+        this.poisons.p.push(pP)
+        this.poisons.q.push(pQ)
+      }
+
+      this.logs.push('Please setup 2 posions.')
     },
+
+    addPoison (x, y) {
+      const player = 'p'
+      this.poisons[player][x][y] = true
+      let posions = 0
+      this.poisons[player].forEach(v => {
+        v.forEach(vv => {
+          if (vv) {
+            posions++
+          }
+        })
+      })
+
+      // AI setup poison
+      if (posions >= posionsPerPlayer) {
+        posions = 0
+
+        for (;posions < 2;) {
+          const randomX = Math.floor(Math.random() * rows) % rows
+          const randomY = Math.floor(Math.random() * cols) % cols
+          this.poisons.q[randomX][randomY] = true
+
+          posions = 0
+          this.poisons.q.forEach(v => {
+            v.forEach(vv => {
+              if (vv) {
+                posions++
+              }
+            })
+          })
+        }
+
+        this.logs.push('Please click any cell to start')
+        this.setupGame = false
+      }
+    },
+
     click (x, y) {
+      // step 1: player p add poison
+      // step 2: player q add poison
+      // step 3: player p start
+      // step 4: player q start
       // setup game
       if (this.setupGame) {
-        this.setupGame = false
         // TODO get x, y and init chain
         // deploy
+        this.addPoison(x, y)
         return
       }
 
@@ -117,7 +178,7 @@ export default {
       // TODO verify
     },
     canClick (x, y, player) {
-      if (x < 0 || x >= 5 || y < 0 || y >= 5) return false
+      if (x < 0 || x >= cols || y < 0 || y >= rows) return false
       if (this.cells[x][y]) return false
       if (!this.lastCell[player]) return true
       const last = this.lastCell[player]
