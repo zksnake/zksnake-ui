@@ -65,12 +65,13 @@ export default {
     // construct wallet
     const wallet = new SensiletWallet()
     web3.setWallet(wallet)
+    console.log(wallet.network)
     // example to display wallet balance
-    // this.wallet = {
-    //   balance: '1111',
-    //     network: 'testnet',
-    //     address: 'asdgawdawdvu27tasd'
-    // }
+    this.wallet = {
+      balance: '1111',
+      network: wallet.network,
+      address: 'asdgawdawdvu27tasd'
+    }
   },
   methods: {
     click (x, y) {
