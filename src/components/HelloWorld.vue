@@ -7,12 +7,13 @@
         <div v-if="setupGame" class="boomIcon">
           <boomIcon class="icon"/>
         </div>
-        <crossIcon class="icon" v-if="!setupGame&&!cells[x][y] && !canClick(x,y, curPlayer)" style="opacity: 0.1; "></crossIcon>
+        <crossIcon class="icon" v-if="!setupGame&&!cells[x][y] && !canClick(x,y, 'p')" style="opacity: 0.1; "></crossIcon>
       </div>
     </div>
     <div class="end" v-if="!wallet.client" @click="setUp">Start Game</div>
     <div>
       <p v-for="(log,idx) in logs" :key="('log-'+idx)">{{log}}</p>
+      <p>{{this.curPlayer}}</p>
     </div>
   </div>
 </template>
@@ -40,6 +41,7 @@ export default {
   data () {
     return {
       setupGame: true,
+      winner: '',
 
       cells: [],
       curPlayer: 'q', // p or q
@@ -62,6 +64,11 @@ export default {
       },
 
       logs: []
+    }
+  },
+  watch: {
+    winner () {
+      this.logs.push('winner is ' + this.winner)
     }
   },
   methods: {
@@ -170,11 +177,42 @@ export default {
         return
       }
 
-      // move
-      if (!this.canClick(x, y, this.curPlayer)) return
-      this.cells[x][y] = this.curPlayer
-      this.lastCell[this.curPlayer] = [x, y]
-      this.nextPlayer()
+      // //////////////////////
+      // player move
+      if (this.winner !== '') return
+      if (!this.canClick(x, y, 'p')) return
+      this.cells[x][y] = 'p'
+      this.lastCell.p = [x, y]
+      // hit AI poison
+      if (this.poisons.q[x][y]) {
+        this.winner = 'q'
+        return
+      }
+      // if AI not able to move
+      let nextCells = this.nextCells('q')
+      if (nextCells.length === 0) {
+        this.winner = 'p'
+        return
+      }
+
+      // //////////////////////
+      // AI move
+      const randomIdx = Math.floor(Math.random() * nextCells.length) % nextCells.length
+      const nextMove = nextCells[randomIdx] // returns [x,y]
+      this.cells[nextMove[0]][nextMove[1]] = 'q'
+      this.lastCell.q = [nextMove[0], nextMove[1]]
+
+      // hit player poison
+      if (this.poisons.p[nextMove[0]][nextMove[1]]) {
+        this.winner = 'p'
+        return
+      }
+
+      // if player not able to move
+      nextCells = this.nextCells('p')
+      if (nextCells.length === 0) {
+        this.winner = 'q'
+      }
       // TODO verify
     },
     canClick (x, y, player) {
@@ -187,26 +225,58 @@ export default {
     },
     styleClass (x, y) {
       return {
-        p: this.cells[x][y] === 'p',
-        q: this.cells[x][y] === 'q',
+        p: this.cells[x][y] === 'q',
+        q: this.cells[x][y] === 'p',
         ph: this.curPlayer === 'p',
         qh: this.curPlayer === 'q'
       }
     },
-    nextPlayer () {
-      const next = this.curPlayer === 'p' ? 'q' : 'p'
-      const lastCell = this.lastCell[next]
-      if (lastCell) {
-        if (!this.canClick(lastCell[0] - 1, lastCell[1], next) &&
-            !this.canClick(lastCell[0] + 1, lastCell[1], next) &&
-            !this.canClick(lastCell[0], lastCell[1] + 1, next) &&
-            !this.canClick(lastCell[0], lastCell[1] - 1, next)
-        ) {
-          return
-        }
+    nextCells (player) {
+      const cells = []
+      let lastCell = this.lastCell[player]
+
+      if (!lastCell) {
+        lastCell = this.lastCell.p
       }
-      this.curPlayer = next // switch
+
+      if (!lastCell) {
+        for (let i = 0; i < rows; i++) {
+          for (let j = 0; j < cols; j++) {
+            if (this.canClick(i, j)) {
+              cells.push([i, j])
+            }
+          }
+        }
+
+        return cells
+      }
+
+      if (this.canClick(lastCell[0] - 1, lastCell[1], player)) {
+        cells.push([lastCell[0] - 1, lastCell[1]])
+      }
+      if (this.canClick(lastCell[0] + 1, lastCell[1], player)) {
+        cells.push([lastCell[0] + 1, lastCell[1]])
+      }
+      if (this.canClick(lastCell[0], lastCell[1] + 1, player)) {
+        cells.push([lastCell[0], lastCell[1] + 1])
+      }
+      if (this.canClick(lastCell[0], lastCell[1] - 1, player)) {
+        cells.push([lastCell[0], lastCell[1] - 1])
+      }
+
+      return cells
     }
+    // nextPlayer () {
+    //   const next = this.curPlayer === 'p' ? 'q' : 'p'
+
+    //   const nextCells = this.nextCells(next)
+    //   if (nextCells.length === 0) {
+    //     this.winner = this.curPlayer
+    //     return
+    //   }
+
+    //   this.curPlayer = next // switch
+    // }
   }
 }
 </script>
