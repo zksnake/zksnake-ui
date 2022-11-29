@@ -7,11 +7,11 @@
         <div v-if="setupGame" class="boomIcon">
           <boomIcon class="icon"/>
         </div>
-        <boomIcon class="icon" v-if="showBoom(x,y)"/>
+        <boomIcon :class="boomIconClass(x,y)" class="icon fadein" v-if="showBoom(x,y)"/>
         <crossIcon class="icon" v-if="!setupGame&&!cells[x][y] && !canClick(x,y, 'p')" style="opacity: 0.1; "></crossIcon>
       </div>
     </div>
-    <div class="end" v-if="!wallet.client" @click="setUp">Start Game</div>
+    <div class="end" v-if="!wallet.client" @click="setUp">{{startText}}</div>
     <div>
       <p class="logs" v-for="(log,idx) in logs" :key="('log-'+idx)">{{log}}</p>
     </div>
@@ -40,6 +40,7 @@ export default {
   },
   data () {
     return {
+      startText: 'Start Game',
       setupGame: true,
       winner: '',
 
@@ -49,6 +50,7 @@ export default {
         q: null,
         p: null
       },
+      lastHit: [],
 
       poisons: {
         p: [],
@@ -78,7 +80,11 @@ export default {
   methods: {
     showBoom (x, y) {
       if (this.poisons.p.length !== rows) return false
-      return this.poisons.p[x][y]
+      if (this.winner === '') {
+        return this.poisons.p[x][y]
+      } else {
+        return this.poisons.p[x][y] || this.poisons.q[x][y]
+      }
       // let show = false
       // this.poisons.p.forEach(v => {
       //   console.log('pppp', v, x, y)
@@ -86,6 +92,13 @@ export default {
       //     show = true
       //   }
       // })
+    },
+    boomIconClass (x, y) {
+      if (this.poisons.p.length !== rows) return {}
+      return {
+        p: this.poisons.p[x][y],
+        q: this.poisons.q[x][y]
+      }
     },
     async setUpWallet () {
       // listen message
@@ -125,6 +138,7 @@ export default {
     },
 
     async setUp () {
+      this.startText = 'Starting'
       await this.setUpWallet()
       // init cells
       for (let i = 0; i < rows; i++) {
@@ -200,6 +214,7 @@ export default {
       if (!this.canClick(x, y, 'p')) return
       this.cells[x][y] = 'p'
       this.lastCell.p = [x, y]
+      this.lastHit = [x, y]
       // hit AI poison
       if (this.poisons.q[x][y]) {
         this.winner = 'q'
@@ -218,6 +233,7 @@ export default {
       const nextMove = nextCells[randomIdx] // returns [x,y]
       this.cells[nextMove[0]][nextMove[1]] = 'q'
       this.lastCell.q = [nextMove[0], nextMove[1]]
+      this.lastHit = [nextMove[0], nextMove[1]]
 
       // hit player poison
       if (this.poisons.p[nextMove[0]][nextMove[1]]) {
@@ -241,11 +257,16 @@ export default {
       return true
     },
     styleClass (x, y) {
+      console.log(this.lastHit, x, y)
+      console.log(this.lastHit, [x, y])
+      // eslint-disable-next-line
+      console.log(this.lastHit == [x, y])
       return {
         p: this.cells[x][y] === 'q',
         q: this.cells[x][y] === 'p',
         ph: this.curPlayer === 'p',
-        qh: this.curPlayer === 'q'
+        qh: this.curPlayer === 'q',
+        hit: this.lastHit.length === 2 && this.lastHit[0] === x && this.lastHit[1] === y
       }
     },
     nextCells (player) {
@@ -351,10 +372,24 @@ export default {
 
 .icon{
   position: absolute;
-  width: 100px;
-  height: 100px;
-  left: 0;
-  top: 0;
+  width: 60px;
+  height: 60px;
+  left: 20px;
+  top: 20px;
+}
+.icon.p{
+  fill: #ff9b9b;
+}
+.icon.q{
+  fill: #8ccaca;
+}
+
+.fadein {
+  animation: fadeIn 3s;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 .end{
@@ -375,5 +410,15 @@ export default {
 .logs:first-child {
   margin-left: 0em;
   opacity: 1;
+}
+
+.hit{
+  animation: hit 1s infinite;
+}
+
+@keyframes hit {
+  0% { opacity: 0; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
 }
 </style>
