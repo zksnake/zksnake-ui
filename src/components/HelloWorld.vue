@@ -10,7 +10,7 @@
         <crossIcon class="icon" v-if="!setupGame&&!cells[x][y] && !canClick(x,y, curPlayer)" style="opacity: 0.1; "></crossIcon>
       </div>
     </div>
-    <div class="end" @click="endGame">End Game</div>
+    <!-- <div class="end" @click="endGame">End Game</div> -->
   </div>
 </template>
 
@@ -50,6 +50,8 @@ export default {
     }
   },
   mounted () {
+    // listen message
+
     const cells = [
       ['', '', '', '', ''], // p or q
       ['', '', '', '', ''],
@@ -58,8 +60,8 @@ export default {
       ['', '', '', '', '']
     ]
     this.cells = cells
-    // TODO 初始化链
 
+    // TODO 初始化链
     // construct wallet
     const wallet = new SensiletWallet()
     web3.setWallet(wallet)
@@ -71,20 +73,21 @@ export default {
     // }
   },
   methods: {
-    endGame () {
-      // TODO end game
-    },
     click (x, y) {
+      // setup game
       if (this.setupGame) {
         this.setupGame = false
         // TODO get x, y and init chain
+        // deploy
         return
       }
 
+      // move
       if (!this.canClick(x, y, this.curPlayer)) return
       this.cells[x][y] = this.curPlayer
       this.lastCell[this.curPlayer] = [x, y]
       this.nextPlayer()
+      // TODO verify
     },
     canClick (x, y, player) {
       if (x < 0 || x >= 5 || y < 0 || y >= 5) return false
