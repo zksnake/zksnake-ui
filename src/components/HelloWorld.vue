@@ -13,8 +13,7 @@
     </div>
     <div class="end" v-if="!wallet.client" @click="setUp">Start Game</div>
     <div>
-      <p v-for="(log,idx) in logs" :key="('log-'+idx)">{{log}}</p>
-      <p>{{this.curPlayer}}</p>
+      <p class="logs" v-for="(log,idx) in logs" :key="('log-'+idx)">{{log}}</p>
     </div>
   </div>
 </template>
@@ -69,7 +68,8 @@ export default {
   },
   watch: {
     winner () {
-      this.logs.push('winner is ' + this.winner)
+      const message = this.winner === 'p' ? 'You' : 'AI'
+      this.logs.unshift('Winner is ' + message)
     }
   },
   mounted () {
@@ -141,7 +141,7 @@ export default {
         this.poisons.q.push(pQ)
       }
 
-      this.logs.push('Please setup 2 posions.')
+      this.logs.unshift('Please setup 2 posions.')
     },
 
     addPoison (x, y) {
@@ -175,7 +175,7 @@ export default {
           })
         }
 
-        this.logs.push('Please click any cell to start')
+        this.logs.unshift('Please click any cell to start')
         this.setupGame = false
       }
     },
@@ -363,5 +363,16 @@ export default {
   margin: 20px auto;
   padding: 10px;
   cursor: pointer;
+}
+.logs{
+  margin-top: 1em;
+  margin-left: 1em;
+  text-align: left;
+  opacity: 0.5;
+}
+
+.logs:first-child {
+  margin-left: 0em;
+  opacity: 1;
 }
 </style>
