@@ -10,7 +10,7 @@
         <crossIcon class="icon" v-if="!setupGame&&!cells[x][y] && !canClick(x,y, curPlayer)" style="opacity: 0.1; "></crossIcon>
       </div>
     </div>
-    <!-- <div class="end" @click="endGame">End Game</div> -->
+    <div class="end" v-if="!wallet.client" @click="setUp">Start Game</div>
   </div>
 </template>
 
@@ -19,7 +19,7 @@
 import crossIcon from '../icons/cross.vue'
 import boomIcon from '../icons/boom.vue'
 import WalletInfo from './WalletInfo.vue'
-import { web3, SensiletWallet } from '../web3'
+import { web3, SensiletWallet, Network } from '../web3'
 
 export default {
   components: {
@@ -45,35 +45,61 @@ export default {
       wallet: {
         balance: 'init',
         network: 'init',
-        address: 'init'
+        address: 'init',
+        client: null
       }
     }
   },
   mounted () {
-    // listen message
-
-    const cells = [
-      ['', '', '', '', ''], // p or q
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', '']
-    ]
-    this.cells = cells
-
-    // TODO 初始化链
-    // construct wallet
-    const wallet = new SensiletWallet()
-    web3.setWallet(wallet)
-    console.log(wallet.network)
-    // example to display wallet balance
-    this.wallet = {
-      balance: '1111',
-      network: wallet.network,
-      address: 'asdgawdawdvu27tasd'
-    }
+    // this.setUp()
   },
   methods: {
+    async setUp () {
+      // listen message
+
+      const cells = [
+        ['', '', '', '', ''], // p or q
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', '']
+      ]
+      this.cells = cells
+
+      // TODO 初始化链
+      // construct wallet
+
+      const wallet = new SensiletWallet()
+      web3.setWallet(wallet)
+      const isConnected = await web3.wallet.isConnected()
+
+      if (isConnected) {
+        const n = await wallet.getNetwork()
+
+        if (n === Network.Mainnet) {
+          alert("your sensilet wallet's network is mainnet, switch to testnet before playing.")
+          return
+        }
+
+        web3.setWallet(new SensiletWallet(n))
+      } else {
+        try {
+          const res = await web3.wallet.requestAccount('zksnake')
+          if (!res) {
+            throw new Error('no response')
+          }
+        } catch (error) {
+          console.error('requestAccount error', error)
+        }
+      }
+      console.log(wallet)
+      this.wallet = {
+        balance: (await wallet.sensilet.getBsvBalance()).balance.total,
+        network: wallet.network,
+        address: await wallet.sensilet.getAddress(),
+        client: wallet
+      }
+    },
     click (x, y) {
       // setup game
       if (this.setupGame) {
