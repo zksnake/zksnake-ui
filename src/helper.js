@@ -12,7 +12,7 @@ const API_PREFIX = 'https://api.whatsonchain.com/v1/bsv/test'
 
 function compileContract(fileName, options) {
     const filePath = path.join(__dirname, 'contracts', fileName)
-    const out = path.join(__dirname, 'out')
+    const out = path.join(__dirname, '..','out')
 
     const result = compileContractImpl(filePath, options ? options : {
         out: out
@@ -28,16 +28,16 @@ function compileContract(fileName, options) {
 function loadDesc(fileName) {
     let filePath = '';
     if (!fileName.endsWith(".json")) {
-        filePath = path.join(__dirname, `out/${fileName}_desc.json`);
+        filePath = path.join(__dirname, `../out/${fileName}_desc.json`);
         if (!existsSync(filePath)) {
-            filePath = path.join(__dirname, `out/${fileName}_debug_desc.json`);
+            filePath = path.join(__dirname, `../out/${fileName}_debug_desc.json`);
 
             if (!existsSync(filePath)) {
-                filePath = path.join(__dirname, `out/${fileName}_release_desc.json`);
+                filePath = path.join(__dirname, `../out/${fileName}_release_desc.json`);
             }
         }
     } else {
-        filePath = path.join(__dirname, `out/${fileName}`);
+        filePath = path.join(__dirname, `../out/${fileName}`);
     }
 
     if (!existsSync(filePath)) {
@@ -106,7 +106,7 @@ async function fetchUtxos(address) {
 }
 
 async function deployContract(contract, amount) {
-    const { privateKey } = require('./privateKey');
+    const { privateKey } = require('../privateKey');
     const address = privateKey.toAddress()
     const tx = new bsv.Transaction()
 
