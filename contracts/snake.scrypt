@@ -54,11 +54,11 @@ contract Snake {
 
         bytes outputs = b'';
 
-        if (this.successfulYourHits == 17) {
+        if (this.successfulYourHits == 2) {
             bytes script = Utils.buildPublicKeyHashScript(hash160(this.you));
             outputs = Utils.buildOutput(script, amount);
         }
-        else if (this.successfulComputerHits == 17) {
+        else if (this.successfulComputerHits == 2) {
             bytes script = Utils.buildPublicKeyHashScript(hash160(this.computer));
             outputs = Utils.buildOutput(script, amount);
         }

@@ -4,12 +4,12 @@ def isPoisonHit(field x, field y, field targetX, field targetY) -> bool {
     return (targetX == x && targetY == y);
 }
 
-def main(private field poison1X, private field poison1Y, private field poison1O, private field poison2X, private field poison2Y, private field poison2O, private field poison3X, private field poison3Y, private field poison3O, private field poison4X, private field poison4Y, private field poison4O, private field poison5X, private field poison5Y, private field poison5O, field shipHash, field targetX, field targetY) -> bool {
+def main(private field poison1X, private field poison1Y, private field poison1O, private field poison2X, private field poison2Y, private field poison2O, private field poison3X, private field poison3Y, private field poison3O, private field poison4X, private field poison4Y, private field poison4O, private field poison5X, private field poison5Y, private field poison5O, field poisonHash, field targetX, field targetY) -> bool {
     // combined fleet state
-    field shipState = poison1X + poison1Y * 16 + poison1O * (16**2) + poison2X * (16**3) + poison2Y * (16**4) + poison2O * (16**5) + poison3X * (16**6) + poison3Y * (16**7) + poison3O * (16**8) + poison4X * (16**9) + poison4Y * (16**10) + poison4O * (16**11) + poison5X * (16**12) + poison5Y * (16**13) + poison5O * (16**14);
+    field poisonState = poison1X + poison1Y * 16 + poison1O * (16**2) + poison2X * (16**3) + poison2Y * (16**4) + poison2O * (16**5) + poison3X * (16**6) + poison3Y * (16**7) + poison3O * (16**8) + poison4X * (16**9) + poison4Y * (16**10) + poison4O * (16**11) + poison5X * (16**12) + poison5Y * (16**13) + poison5O * (16**14);
 
     // fleet hash check
-    assert(mimc7::<91>(shipState, 0) == shipHash);
+    assert(mimc7::<91>(poisonState, 0) == poisonHash);
 
     // fire range check
     assert(targetX >= 0 && targetX <= 9 && targetY >= 0 && targetY <= 9);
