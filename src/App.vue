@@ -4,7 +4,8 @@
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
-
+import { initPlayer } from './storage'
+initPlayer()
 export default {
   name: 'App',
   components: {

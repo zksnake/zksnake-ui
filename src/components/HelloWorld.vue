@@ -1,6 +1,7 @@
 <template>
   <div class="hello">
     <WalletInfo :wallet="wallet"></WalletInfo>
+    <button @click="deployToBSV"> Deploy to BSV </button>
     <div class="row" v-for="xc, x in cells" :key="'x-'+x">
       <div class="cell" :class="styleClass(x,y)"
         v-for="yc, y in xc" :key="'y-'+y" @click="click(x,y)">
@@ -24,6 +25,7 @@ import crossIcon from '../icons/cross.vue'
 import boomIcon from '../icons/boom.vue'
 import WalletInfo from './WalletInfo.vue'
 import { web3, SensiletWallet, Network } from '../web3'
+import { startGame } from '../startGame'
 
 const rows = 5
 const cols = 5
@@ -193,6 +195,17 @@ export default {
         this.logs.unshift('Please click any cell to start')
         this.setupGame = false
       }
+    },
+
+    deployToBSV () {
+      const playerShips = [
+        [1, 1, 0],
+        [2, 2, 0],
+        [1, 1, 0],
+        [1, 1, 0],
+        [1, 1, 0]
+      ]
+      startGame(playerShips, playerShips)
     },
 
     click (x, y) {

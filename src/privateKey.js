@@ -1,5 +1,5 @@
 const { exit } = require('process')
-const { bsv } = require('scryptlib');
+const { bsv } = require('scryptlib')
 
 // fill in private key on testnet in WIF here
 const privKey = 'cSbYMVKeEHSCwSY78tngyJUL4pW56pEQbYsgDPtjChypykcAwLkV'
@@ -8,14 +8,15 @@ if (!privKey) {
   genPrivKey()
 }
 
-function genPrivKey() {
+function genPrivKey () {
+// eslint-disable-next-line new-cap
   const newPrivKey = new bsv.PrivateKey.fromRandom('testnet')
   console.log(`Missing private key, generating a new one ...
 Private key generated: '${newPrivKey.toWIF()}'
 You can fund its address '${newPrivKey.toAddress()}' from sCrypt faucet https://scrypt.io/#faucet`)
   exit(-1)
 }
-
+// eslint-disable-next-line new-cap
 const privateKey = new bsv.PrivateKey.fromWIF(privKey)
 
 module.exports = {
