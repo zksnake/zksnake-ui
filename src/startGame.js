@@ -20,7 +20,6 @@ async function hashShips (placedShips) {
 
 export const startGame = async (playerShips, computerShips) => {
   const Snake = buildContractClass(desc)
-
   const playerHash = await hashShips(playerShips)
   const computerHash = await hashShips(computerShips)
   console.log('Player Hash: ', playerHash)
