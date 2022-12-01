@@ -1,5 +1,6 @@
 
 import axios, { AxiosError } from 'axios'
+import { Agent } from 'https'
 import { Network } from './wallet'
 
 export class Gorillapool {
@@ -15,10 +16,15 @@ export class Gorillapool {
       const size = Math.max(1, txhex.length / 2 / 1024) // KB
       const time = Math.max(100000, 1000 * size)
 
+      const agent = new Agent({
+        rejectUnauthorized: false
+      })
+      console.log('txhex:', txhex)
       try {
         const {
           data
         } = await axios({
+          httpAgent: agent,
           method: 'post',
           url: 'https://testnet.merchantapi.gorillapool.io/mapi/tx',
           data: Buffer.from(txhex, 'hex'),

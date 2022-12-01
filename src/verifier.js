@@ -30,8 +30,8 @@ async function zokratesProof(ships, x, y) {
     scheme: "g16"
 });
 
-  const program = fs.readFileSync(path.join(__dirname, 'circuits', 'out'));
-  let abi = JSON.parse(fs.readFileSync(path.join(__dirname, 'circuits', 'abi.json')).toString());
+  const program = fs.readFileSync(path.join(__dirname, '..', 'circuits', 'out'));
+  let abi = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'circuits', 'abi.json')).toString());
 
 
   // computation
@@ -40,8 +40,8 @@ async function zokratesProof(ships, x, y) {
     abi: abi
   }, await shipsToWitness(ships, x, y));
 
-  const provingkey = fs.readFileSync(path.join(__dirname, 'circuits', 'proving.key')).toJSON().data
-  const verificationkey = JSON.parse(fs.readFileSync(path.join(__dirname, 'circuits', 'verification.key')).toString())
+  const provingkey = fs.readFileSync(path.join(__dirname, '..', 'circuits', 'proving.key')).toJSON().data
+  const verificationkey = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'circuits', 'verification.key')).toString())
 
   const proof = zokratesProvider.generateProof(program, witness, provingkey);
 

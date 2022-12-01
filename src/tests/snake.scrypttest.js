@@ -12,24 +12,6 @@ const publicKeyPlayer = bsv.PublicKey.fromPrivateKey(privateKeyPlayer)
 const privateKeyComputer = new bsv.PrivateKey.fromRandom('testnet')
 const publicKeyComputer = bsv.PublicKey.fromPrivateKey(privateKeyComputer)
 
-const playerShips = [
-  [7, 1, 1],
-  [1, 1, 0],
-  [1, 4, 1],
-  [3, 5, 0],
-  [6, 8, 0],
-];
-
-
-const computerShips = [
-  [7, 1, 1],
-  [1, 1, 0],
-  [1, 4, 1],
-  [3, 5, 0],
-  [6, 8, 0],
-]
-
-
 describe('Test sCrypt contract Snake In Javascript', () => {
   let zkSnake, result
 

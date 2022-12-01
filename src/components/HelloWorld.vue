@@ -1,6 +1,7 @@
 <template>
   <div class="hello">
     <WalletInfo :wallet="wallet"></WalletInfo>
+    <button @click="deployToBSV"> Deploy to BSV </button>
     <div class="row" v-for="xc, x in cells" :key="'x-'+x">
       <div class="cell" :class="styleClass(x,y)"
         v-for="yc, y in xc" :key="'y-'+y" @click="click(x,y)">
@@ -24,6 +25,8 @@ import crossIcon from '../icons/cross.vue'
 import boomIcon from '../icons/boom.vue'
 import WalletInfo from './WalletInfo.vue'
 import { web3, SensiletWallet, Network } from '../web3'
+import { startGame } from '../startGame'
+// import { eatPoison } from '../move'
 
 const rows = 5
 const cols = 5
@@ -45,6 +48,11 @@ export default {
       winner: '',
 
       cells: [],
+      // [
+      //   ['', '', 'p']
+      //   ['', 'p', 'p']
+      //   ['q', 'q', 'q']
+      // ]
       curPlayer: 'q', // p or q
       lastCell: { // last position of p or q
         q: null,
@@ -56,6 +64,11 @@ export default {
         p: [],
         q: []
       },
+      // [
+      //   [false, false, false]]
+      //   [false, true, false]]
+      //   [true, false, false]]
+      // ]
 
       // wallet
       wallet: {
@@ -192,10 +205,16 @@ export default {
 
         this.logs.unshift('Please click any cell to start')
         this.setupGame = false
+
+        // this.deployToBSV()
       }
     },
 
-    click (x, y) {
+    deployToBSV () {
+      startGame(this.poisons.p, this.poisons.q)
+    },
+
+    async click (x, y) {
       // step 1: player p add poison
       // step 2: player q add poison
       // step 3: player p start
@@ -217,8 +236,14 @@ export default {
       this.lastHit = [x, y]
       // hit AI poison
       if (this.poisons.q[x][y]) {
-        this.winner = 'q'
-        return
+        // await eatPoison(this.cells, true)
+        // const isPass = await eatPoison(x, y, 'p', true)
+        // if (isPass) {
+        //   this.winner = 'q'
+        //   return
+        // }
+      } else {
+        // Do nothing
       }
       // if AI not able to move
       let nextCells = this.nextCells('q')
@@ -226,6 +251,7 @@ export default {
         this.winner = 'p'
         return
       }
+      // TODO verify
 
       // //////////////////////
       // AI move
@@ -237,8 +263,13 @@ export default {
 
       // hit player poison
       if (this.poisons.p[nextMove[0]][nextMove[1]]) {
+        // const isPass = await eatPoison(x, y, 'q', true)
+        // TODO if
+
         this.winner = 'p'
         return
+      } else {
+        //
       }
 
       // if player not able to move

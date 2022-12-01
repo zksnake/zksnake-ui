@@ -2,77 +2,23 @@ import "verifier.scrypt";
 
 contract Snake {
 
-    PubKey you;
-    PubKey computer;
+    // PubKey you;
+    // PubKey computer;
 
     int yourHash;
     int computerHash;
 
-    @state
-    int successfulYourHits;
-
-    @state
-    int successfulComputerHits;
-
-    @state
-    bool yourTurn;
-
-
-    @state
-    bool[100] yourHits;
-
-    @state
-    bool[100] computerHits;
-
-    public function move(Sig sig, int x, int y, bool hit, Proof proof, int amount, SigHashPreimage txPreimage)
+    public function end(int snakeState1, int snakeState2, bool yourTurn, Proof proof)
     {
-        require(Tx.checkPreimage(txPreimage));
+        int curSnakeState = yourTurn?snakeState1:snakeState2;
+        int nextSnakeState = yourTurn?snakeState2:snakeState1;
+        
+        // Only verify when a snake eats poison
+        require(ZKSNARK.verify([curSnakeState, nextSnakeState, yourTurn?this.computerHash:this.yourHash, 1], proof));
 
-        require(ZKSNARK.verify([this.yourTurn ? this.computerHash : this.yourHash, x, y, hit ? 1 : 0], proof));
+        // PubKey pubKey = yourTurn ? this.you : this.computer;
+        // require(checkSig(sig, pubKey));
 
-
-        PubKey pubKey = this.yourTurn ? this.you : this.computer;
-        require(checkSig(sig, pubKey));
-
-
-        if (this.yourTurn) {
-            require(!this.yourHits[coordsToIndex(x,y)]);
-            this.yourHits[coordsToIndex(x,y)] = true;
-            if (hit) {
-                this.successfulYourHits++;
-            }
-        }
-        else {
-            require(!this.computerHits[coordsToIndex(x,y)]);
-            this.computerHits[coordsToIndex(x,y)] = true;
-            if (hit) {
-                this.successfulComputerHits++;
-            }
-        }
-
-        this.yourTurn = !this.yourTurn;
-
-        bytes outputs = b'';
-
-        if (this.successfulYourHits == 2) {
-            bytes script = Utils.buildPublicKeyHashScript(hash160(this.you));
-            outputs = Utils.buildOutput(script, amount);
-        }
-        else if (this.successfulComputerHits == 2) {
-            bytes script = Utils.buildPublicKeyHashScript(hash160(this.computer));
-            outputs = Utils.buildOutput(script, amount);
-        }
-        else {
-
-            bytes outputScript = this.getStateScript();
-            outputs = Utils.buildOutput(outputScript, amount);
-        }
-
-        // make sure the transaction contains the expected outputs
-        require(hash256(outputs) == SigHash.hashOutputs(txPreimage));
     }
 
-    static function coordsToIndex(int x, int y) : int {
-        return y * 10 + x;
-    }
 }
