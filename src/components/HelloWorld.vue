@@ -236,15 +236,14 @@ export default {
       this.lastHit = [x, y]
       // hit AI poison
       if (this.poisons.q[x][y]) {
-        await eatPoison(this.cells, true)
+        // await eatPoison(this.cells, true)
         // const isPass = await eatPoison(x, y, 'p', true)
         // if (isPass) {
         //   this.winner = 'q'
         //   return
         // }
       } else {
-        // const isPass = await eatPoison(x, y, 'p', false)
-        // TODO
+        // Do nothing
       }
       // if AI not able to move
       let nextCells = this.nextCells('q')
