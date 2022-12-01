@@ -49,9 +49,10 @@ export class web3 {
           satoshis: amountInContract
         }))
         .change(changeAddress)
-
+      console.log('changeAddress:', changeAddress)
       return wallet.signRawTransaction(tx.toString(), utxos[0].script, utxos[0].satoshis, 0, SignType.ALL)
     }).then(async (rawTx: string) => {
+      console.log('about to send rawTx')
       await web3.sendRawTx(rawTx)
       return rawTx
     })

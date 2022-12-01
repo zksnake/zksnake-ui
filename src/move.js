@@ -1,39 +1,75 @@
 import { bsv, buildContractClass, getPreimage, Int, PubKey, signTx } from 'scryptlib'
 import { web3 } from './web3'
 
-
-const click = async (x, y, player, isHit)=>{
-  // TODO
-  const proof =
-  const contractUtxo =
-
-  // [
-  //   false, false, false,
-  //   false, false, false,
-  //   false, false, false,
-  // ]
-
-  // idx = x * rows + y
-
-  // [[3,2], [2,2]]
-
-
-  // [
-  //   [false, false, false]
-  //   [false, true, true]
-  //   [false, false, false]
-  // ]
-
-  try {
-    await web3.call(contractUtxo, async(tx) => {
-
-    })
-  }catch(err){
-    console.log('not hit')
-    throw err
+function CellsToSnakeStates (cells) {
+  let snakeState1 = 0, snakeState2 = 0
+  for (let i = 0; i < cells.length; i++) {
+    for (let j = 0; j < cells[i].length; j++) {
+      snakeState1 *= 2
+      snakeState2 *= 2
+      if (cells[i][j] === 'p') {
+        snakeState1++
+      } else if (cells[i][j] === 'q') {
+        snakeState2++
+      }
+    }
   }
-  return isHit
+  return snakeState1, snakeState2
 }
+
+const eatPoison = async (cells, yourTurn)=>{
+
+  // 1. convert cells to snake1,snake2 
+  //                     00001, 10000
+  //                     00001, 10000
+  //                     00001, 10000
+  //                     00001, 10000
+  //                     00001, 10000
+  const {snakeState1, snakeState2} = CellsToSnakeStates(cells)
+  // const proof =
+  // const contractUtxo =
+
+
+    return web3.call(contractUtxo, async(tx) => {
+       
+
+        tx.setOutput(0, (tx) => {
+          const amount = contractUtxo.satoshis - tx.getEstimateFee();
+          if (amount < 1) {
+            alert('Not enough funds.');
+            throw new Error('Not enough funds.')
+          }
+
+          return new bsv.Transaction.Output({
+            script: bsv.Script.buildPublicKeyHashOut(PlayerPrivkey.get(Player.You)),
+            satoshis: amount,
+          })
+        })
+
+
+        tx.setInputScript(0, (tx, output) => {
+          const preimage = getPreimage(tx, output.script, output.satoshis)
+          const currentTurn = !newStates.yourTurn;
+          const privateKey = new bsv.PrivateKey.fromWIF(currentTurn ? PlayerPrivkey.get(Player.You) : PlayerPrivkey.get(Player.Computer));
+          const sig = signTx(tx, privateKey, output.script, output.satoshis)
+          const position = indexToCoords(index);
+  
+          let amount = contractUtxo.satoshis - tx.getEstimateFee();
+  
+          if (amount < 1) {
+            alert('Not enough funds.');
+            throw new Error('Not enough funds.')
+          }
+  
+          return contract.end(snakeState1, snakeState2, yourTurn, proof).toScript();
+        })
+          .seal();
+    })
+    .catch(e => {
+      console.error('call contract fail', e)
+    })
+  }
+  
 
 
 const move = async (isPlayerFired, index, contractUtxo, hit, proof, newStates) => {

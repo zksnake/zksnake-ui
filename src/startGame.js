@@ -6,29 +6,49 @@ import desc from '../out/snake_desc.json'
 
 const { loadDesc, newTx, inputSatoshis } = require('./helper')
 
-async function hashShips (placedShips) {
-  let shipPreimage = 0n
-  for (let i = 0; i < placedShips.length; i++) {
-    const ship = placedShips[i]
-    // eslint-disable-next-line no-undef
-    shipPreimage += BigInt(ship[0] * Math.pow(16, i * 3) + ship[1] * Math.pow(16, i * 3 + 1) + ship[2] * Math.pow(16, i * 3 + 2))
-  }
+async function hashPoison (poisonState) {
+  let poisonPreimage = 0n
 
+  console.log('-------- PoisonState:' + poisonState)
+
+  poisonPreimage = BigInt(poisonState)
+
+  console.log(poisonPreimage)
   const mimc7 = await buildMimc7()
-  return mimc7.F.toString(mimc7.hash(shipPreimage, 0))
+
+  return mimc7.F.toString(mimc7.hash(poisonPreimage, 0))
 }
 
-export const startGame = async (playerShips, computerShips) => {
+function poisonMatrixToState (poisonMatrix) {
+  let poisonState = 0
+  for (let i = 0; i < poisonMatrix.length; i++) {
+    for (let j = 0; j < poisonMatrix[i].length; j++) {
+      poisonState = 2 * poisonState
+      if (poisonMatrix[i][j] === true) {
+        poisonState++
+      }
+    }
+  }
+  return poisonState
+}
+
+export const startGame = async (playerPoison, computerPoison) => {
+  console.log('playerPoison:', playerPoison)
+  console.log('computerPoison:', computerPoison)
+  const playerPoisonState = poisonMatrixToState(playerPoison)
+  const computerPoisonState = poisonMatrixToState(computerPoison)
+  console.log('playerPoisonState:', playerPoisonState)
+  console.log('computerPoisonState:', computerPoisonState)
+
   const Snake = buildContractClass(desc)
-  const playerHash = await hashShips(playerShips)
-  const computerHash = await hashShips(computerShips)
+  console.log(desc)
+
+  const playerHash = await hashPoison(playerPoisonState)
+  const computerHash = await hashPoison(computerPoisonState)
   console.log('Player Hash: ', playerHash)
   console.log('Computer Hash:', computerHash)
 
-  const contract = new Snake(new PubKey(PlayerPublicKey.get(Player.You)),
-    new PubKey(PlayerPublicKey.get(Player.Computer)),
-    new Int(playerHash), new Int(computerHash), 0, 0, true, new Array(100).fill(false), new Array(100).fill(false)
-  )
+  const contract = new Snake(new Int(playerHash), new Int(computerHash))
   console.log('ZkSnake:', contract)
 
   try {

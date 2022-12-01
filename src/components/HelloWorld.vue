@@ -26,6 +26,7 @@ import boomIcon from '../icons/boom.vue'
 import WalletInfo from './WalletInfo.vue'
 import { web3, SensiletWallet, Network } from '../web3'
 import { startGame } from '../startGame'
+// import { eatPoison } from '../move'
 
 const rows = 5
 const cols = 5
@@ -205,7 +206,7 @@ export default {
         this.logs.unshift('Please click any cell to start')
         this.setupGame = false
 
-        this.deployToBSV()
+        // this.deployToBSV()
       }
     },
 
@@ -235,13 +236,14 @@ export default {
       this.lastHit = [x, y]
       // hit AI poison
       if (this.poisons.q[x][y]) {
-        const isPass = await click(x, y, 'p', true)
-        if (isPass) {
-          this.winner = 'q'
-          return
-        }
+        await eatPoison(this.cells, true)
+        // const isPass = await eatPoison(x, y, 'p', true)
+        // if (isPass) {
+        //   this.winner = 'q'
+        //   return
+        // }
       } else {
-        const isPass = await click(x, y, 'p', false)
+        // const isPass = await eatPoison(x, y, 'p', false)
         // TODO
       }
       // if AI not able to move
@@ -262,14 +264,13 @@ export default {
 
       // hit player poison
       if (this.poisons.p[nextMove[0]][nextMove[1]]) {
-        const isPass = await click(x, y, 'q', true)
+        // const isPass = await eatPoison(x, y, 'q', true)
         // TODO if
 
         this.winner = 'p'
         return
       } else {
-        const isPass = await click(x, y, 'q', false)
-        // TODO if
+        //
       }
 
       // if player not able to move
